@@ -1,0 +1,4 @@
+﻿kode_mapel,tipe,teks_soal,url_gambar,opsi_a,opsi_b,opsi_c,opsi_d,opsi_e,kunci,pembahasan,bobot
+MTK-01,PG,Hasil dari 12 x 3 adalah ...,,36,32,38,42,30,A,12 x 3 = 36.,1
+MTK-01,PGK,Pilih semua bilangan prima berikut.,,2,4,7,9,15,"A,C",Bilangan prima hanya habis dibagi 1 dan dirinya sendiri: 2 dan 7.,2
+MTK-01,BS,Jumlah sudut dalam segitiga adalah 180 derajat.,,,,,,,B,Jumlah ketiga sudut dalam segitiga selalu 180 derajat.,1

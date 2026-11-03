@@ -1,0 +1,4 @@
+﻿id_peserta,nama_lengkap,kelas,username,password,status_aktif
+PST-101,Budi Santoso,XII IPA 1,budi.santoso,rahasia123,1
+PST-102,Citra Lestari,XII IPA 2,citra_lestari,rahasia456,aktif
+PST-103,Dewi Anggraini,XII IPS 1,dewi.anggraini,rahasia789,0

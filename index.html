@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <title>CBT TKA</title>
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/admin.css">
+  <!-- ujian.css wajib setelah base.css: beberapa aturan menimpa .btn pada spesifisitas sama. -->
+  <link rel="stylesheet" href="css/ujian.css">
+</head>
+<body>
+  <noscript>
+    <p class="noscript">Aplikasi CBT TKA membutuhkan JavaScript. Aktifkan JavaScript di peramban Anda lalu muat ulang halaman.</p>
+  </noscript>
+
+  <!-- Wadah utama SPA: app.js merender halaman sesuai hash route ke sini. -->
+  <main id="app" class="app" aria-live="polite">
+    <div class="loading loading-page" role="status">
+      <span class="spinner" aria-hidden="true"></span>
+      <span>Memuat aplikasi...</span>
+    </div>
+  </main>
+
+  <!-- Wadah notifikasi (toast) yang dikelola ui.js. -->
+  <div id="toast-container" class="toast-container" aria-live="assertive" aria-atomic="false"></div>
+
+  <!-- Wadah dialog konfirmasi yang dikelola ui.js. -->
+  <div id="dialog-root" class="dialog-root"></div>
+
+  <!-- Indikator memuat global yang dikelola ui.js. -->
+  <div id="loading-overlay" class="loading-overlay" hidden>
+    <div class="loading" role="status">
+      <span class="spinner" aria-hidden="true"></span>
+      <span>Memproses...</span>
+    </div>
+  </div>
+
+  <!-- 1. Konfigurasi (satu-satunya file yang diubah saat ganti Backend) -->
+  <script src="config.js"></script>
+
+  <!-- 2. Logika murni bersama. datetime.js dimuat sebelum rekap.js (rekap memakai CBTDatetime). -->
+  <script src="js/shared/datetime.js"></script>
+  <script src="js/shared/validator.js"></script>
+  <script src="js/shared/markup.js"></script>
+  <script src="js/shared/csv.js"></script>
+  <script src="js/shared/xlsx.js"></script>
+  <script src="js/shared/exam-logic.js"></script>
+  <script src="js/shared/rekap.js"></script>
+  <script src="js/shared/answer-queue.js"></script>
+
+  <!-- 3. Inti Frontend -->
+  <script src="js/api.js"></script>
+  <script src="js/ui.js"></script>
+
+  <!-- 4. Halaman (didaftarkan ke router sebelum app.js dijalankan) -->
+  <script src="js/pages/login.js"></script>
+  <script src="js/pages/ganti-password.js"></script>
+  <script src="js/pages/admin-dashboard.js"></script>
+  <script src="js/pages/admin-peserta.js"></script>
+  <script src="js/pages/admin-mapel.js"></script>
+  <script src="js/pages/admin-soal.js"></script>
+  <script src="js/pages/admin-import.js"></script>
+  <script src="js/pages/peserta-pilih.js"></script>
+  <script src="js/pages/peserta-konfirmasi.js"></script>
+  <script src="js/pages/ujian.js"></script>
+  <script src="js/pages/hasil.js"></script>
+  <script src="js/pages/admin-laporan.js"></script>
+  <script src="js/pages/admin-detail.js"></script>
+
+  <!-- 5. Router dan state auth (dimuat terakhir) -->
+  <script src="js/app.js"></script>
+</body>
+</html>

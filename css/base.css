@@ -1,0 +1,479 @@
+/*
+ * base.css - CBT TKA
+ * Variabel warna, tipografi, utilitas, dan komponen umum. Tanpa framework.
+ *
+ * KATALOG KELAS KOMPONEN (dipakai bersama oleh ui.js dan halaman):
+ *   Tata letak  : .app, .container, .stack, .row, .spacer, .hidden, .sr-only
+ *   Kartu       : .card, .card-header, .card-title, .card-body, .card-footer
+ *   Tombol      : .btn, .btn-primary, .btn-secondary, .btn-danger, .btn-warning,
+ *                 .btn-link, .btn-sm, .btn-block, .btn-group
+ *                 (status sibuk: atribut [disabled] + kelas .is-loading, atau
+ *                 .is-busy + span.loading kosong dari ui.withBusy)
+ *   Form        : .form, .form-row, .field, .field-label, .field-hint,
+ *                 .field-error (pesan validasi), .is-invalid (input salah),
+ *                 .required (penanda label wajib)
+ *   Tabel       : .table-wrap (scroll horizontal sendiri), .table,
+ *                 .table-actions, .col-num, .empty-state
+ *   Paginasi    : .pagination, .pagination-info, .pagination-btn, .is-active
+ *   Badge       : .badge, .badge-success, .badge-warning, .badge-danger,
+ *                 .badge-info, .badge-muted
+ *   Alert       : .alert, .alert-info, .alert-success, .alert-warning, .alert-danger
+ *   Toast       : .toast-container, .toast, .toast-success, .toast-error,
+ *                 .toast-warning, .toast-info, .toast-close, .is-leaving
+ *                 Alias nama ui.js: .toast-sukses, .toast-peringatan,
+ *                 .toast-pesan (teks), .toast-tutup (tombol tutup)
+ *   Dialog      : .dialog-root, .dialog-backdrop, .dialog, .dialog-title,
+ *                 .dialog-body, .dialog-actions
+ *                 Alias nama ui.js: .dialog-judul, .dialog-pesan, .dialog-aksi
+ *   Memuat      : .loading, .loading-page, .loading-overlay, .spinner,
+ *                 .loading-teks (teks indikator ui.tampilkanLoading)
+ *   Teks        : .text-muted, .text-danger, .text-success, .text-center, .text-right
+ */
+
+:root {
+  /* Warna */
+  --c-primary: #1565c0;
+  --c-primary-dark: #0d47a1;
+  --c-primary-light: #e3f2fd;
+  --c-danger: #c62828;
+  --c-danger-dark: #8e0000;
+  --c-danger-light: #ffebee;
+  --c-warning: #f9a825;
+  --c-warning-dark: #8d6e00;
+  --c-warning-light: #fff8e1;
+  --c-success: #2e7d32;
+  --c-success-light: #e8f5e9;
+  --c-info: #0277bd;
+  --c-info-light: #e1f5fe;
+  --c-text: #212121;
+  --c-text-muted: #5f6368;
+  --c-border: #d0d5dd;
+  --c-bg: #f4f6f9;
+  --c-surface: #ffffff;
+  --c-focus: #ffbf47;
+
+  /* Tipografi (teks antarmuka minimal 14 px, Requirement 27.7) */
+  --font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --fs-sm: 14px;
+  --fs-base: 16px;
+  --fs-lg: 18px;
+  --fs-xl: 22px;
+  --fs-xxl: 26px;
+  --lh: 1.5;
+
+  /* Ruang dan bentuk */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+  --radius: 6px;
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.2);
+  --touch: 44px;
+  --container-max: 1200px;
+}
+
+/* ---------- Reset ringan ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* Tanpa scroll horizontal tingkat halaman (Requirement 27.2).
+ * overflow-x pada html merambat ke viewport; body memakai clip agar tidak
+ * menjadi wadah scroll (position: sticky pada header tetap berfungsi). */
+html { overflow-x: hidden; }
+body { max-width: 100%; overflow-x: clip; }
+
+body {
+  margin: 0;
+  font-family: var(--font-family);
+  font-size: 16px;
+  line-height: var(--lh);
+  color: var(--c-text);
+  background: var(--c-bg);
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+}
+
+h1, h2, h3, h4 { margin: 0 0 var(--sp-3); line-height: 1.25; }
+h1 { font-size: var(--fs-xxl); }
+h2 { font-size: var(--fs-xl); }
+h3 { font-size: var(--fs-lg); }
+h4 { font-size: var(--fs-base); }
+p { margin: 0 0 var(--sp-3); }
+small { font-size: var(--fs-sm); }
+
+img, video, svg, canvas { max-width: 100%; height: auto; }
+pre, code { white-space: pre-wrap; overflow-wrap: anywhere; }
+
+a { color: var(--c-primary); }
+a:hover { color: var(--c-primary-dark); }
+
+:focus-visible {
+  outline: 3px solid var(--c-focus);
+  outline-offset: 2px;
+}
+
+button, input, select, textarea { font: inherit; color: inherit; }
+
+[hidden], .hidden { display: none !important; }
+
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.noscript {
+  margin: var(--sp-4);
+  padding: var(--sp-4);
+  background: var(--c-warning-light);
+  border: 1px solid var(--c-warning);
+  border-radius: var(--radius);
+}
+
+/* ---------- Tata letak ---------- */
+.app { min-height: 100vh; min-width: 0; }
+
+.container {
+  width: 100%;
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: var(--sp-4);
+}
+
+.stack > * + * { margin-top: var(--sp-4); }
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2);
+  min-width: 0;
+}
+
+.spacer { flex: 1 1 auto; }
+
+/* ---------- Kartu ---------- */
+.card {
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  min-width: 0;
+}
+.card-header, .card-body, .card-footer { padding: var(--sp-4); }
+.card-header { border-bottom: 1px solid var(--c-border); }
+.card-footer { border-top: 1px solid var(--c-border); }
+.card-title { margin: 0; font-size: var(--fs-lg); }
+
+/* ---------- Tombol ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  min-height: var(--touch);
+  min-width: var(--touch);
+  padding: var(--sp-2) var(--sp-4);
+  font-size: var(--fs-base);
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
+  text-decoration: none;
+  white-space: normal;
+  color: var(--c-text);
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  user-select: none;
+  max-width: 100%;
+}
+.btn:hover { background: #eef1f5; }
+.btn[disabled], .btn.is-disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+/* Sibuk via ui.withBusy: kelas .is-busy + <span class="loading"> kosong di awal tombol. */
+.btn.is-busy { cursor: progress; }
+.btn > .loading:empty {
+  flex: 0 0 auto;
+  width: 1em; height: 1em;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: cbt-spin 0.8s linear infinite;
+}
+.btn.is-loading::before {
+  content: "";
+  width: 1em; height: 1em;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: cbt-spin 0.8s linear infinite;
+}
+
+.btn-primary { color: #fff; background: var(--c-primary); border-color: var(--c-primary); }
+.btn-primary:hover { background: var(--c-primary-dark); border-color: var(--c-primary-dark); }
+.btn-secondary { color: var(--c-primary); background: var(--c-surface); border-color: var(--c-primary); }
+.btn-secondary:hover { background: var(--c-primary-light); }
+.btn-danger { color: #fff; background: var(--c-danger); border-color: var(--c-danger); }
+.btn-danger:hover { background: var(--c-danger-dark); border-color: var(--c-danger-dark); }
+.btn-warning { color: #212121; background: var(--c-warning); border-color: var(--c-warning); }
+.btn-warning:hover { background: #f57f17; border-color: #f57f17; }
+.btn-link { background: transparent; border-color: transparent; color: var(--c-primary); text-decoration: underline; }
+.btn-link:hover { background: var(--c-primary-light); }
+.btn-sm { min-height: 36px; padding: var(--sp-1) var(--sp-3); font-size: var(--fs-sm); }
+.btn-block { display: flex; width: 100%; }
+.btn-group { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
+
+/* ---------- Form ---------- */
+.form { display: flex; flex-direction: column; gap: var(--sp-4); }
+.form-row { display: flex; flex-wrap: wrap; gap: var(--sp-4); }
+.form-row > .field { flex: 1 1 220px; min-width: 0; }
+
+.field { display: flex; flex-direction: column; gap: var(--sp-1); min-width: 0; }
+.field-label { font-size: var(--fs-sm); font-weight: 600; }
+.field-label .required, .required { color: var(--c-danger); }
+.field-hint { font-size: var(--fs-sm); color: var(--c-text-muted); }
+.field-error { font-size: var(--fs-sm); color: var(--c-danger); }
+.field-error:empty { display: none; }
+
+input[type="text"], input[type="password"], input[type="number"], input[type="search"],
+input[type="datetime-local"], input[type="date"], input[type="url"], input[type="file"],
+select, textarea {
+  width: 100%;
+  max-width: 100%;
+  min-height: var(--touch);
+  padding: var(--sp-2) var(--sp-3);
+  font-size: var(--fs-base); /* 16 px mencegah zoom otomatis di iOS */
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius);
+}
+textarea { min-height: 120px; resize: vertical; }
+input[type="checkbox"], input[type="radio"] { width: 20px; height: 20px; accent-color: var(--c-primary); }
+input:disabled, select:disabled, textarea:disabled { background: #eceff1; cursor: not-allowed; }
+.is-invalid, input.is-invalid, select.is-invalid, textarea.is-invalid { border-color: var(--c-danger); background: var(--c-danger-light); }
+
+/* ---------- Tabel ---------- */
+/* Wadah tabel memiliki scroll horizontal sendiri; halaman tidak (Requirement 27.2). */
+.table-wrap {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius);
+}
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--fs-sm);
+}
+.table th, .table td {
+  padding: var(--sp-2) var(--sp-3);
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--c-border);
+  white-space: nowrap;
+}
+.table th { background: #eef1f5; font-weight: 600; position: sticky; top: 0; }
+.table tbody tr:hover { background: #f8fafc; }
+.table td.wrap, .table th.wrap { white-space: normal; min-width: 200px; }
+.table .col-num { text-align: right; }
+.table-actions { display: flex; gap: var(--sp-2); flex-wrap: nowrap; }
+.empty-state { padding: var(--sp-5); text-align: center; color: var(--c-text-muted); }
+
+/* ---------- Paginasi ---------- */
+.pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-top: var(--sp-3);
+}
+.pagination-info { font-size: var(--fs-sm); color: var(--c-text-muted); margin-right: auto; }
+.pagination-btn {
+  min-width: var(--touch);
+  min-height: var(--touch);
+  padding: var(--sp-1) var(--sp-3);
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+.pagination-btn.is-active { color: #fff; background: var(--c-primary); border-color: var(--c-primary); }
+.pagination-btn[disabled] { opacity: 0.5; cursor: not-allowed; }
+
+/* ---------- Badge ---------- */
+.badge {
+  display: inline-block;
+  padding: 2px var(--sp-2);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  line-height: 1.4;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  color: var(--c-text);
+  background: #eceff1;
+}
+.badge-success { color: var(--c-success); background: var(--c-success-light); border-color: var(--c-success); }
+.badge-warning { color: var(--c-warning-dark); background: var(--c-warning-light); border-color: var(--c-warning); }
+.badge-danger { color: var(--c-danger); background: var(--c-danger-light); border-color: var(--c-danger); }
+.badge-info { color: var(--c-info); background: var(--c-info-light); border-color: var(--c-info); }
+.badge-muted { color: var(--c-text-muted); background: #eceff1; border-color: var(--c-border); }
+
+/* ---------- Alert ---------- */
+.alert {
+  padding: var(--sp-3) var(--sp-4);
+  border-radius: var(--radius);
+  border: 1px solid var(--c-border);
+  border-left-width: 4px;
+  background: var(--c-surface);
+}
+.alert-info { border-color: var(--c-info); background: var(--c-info-light); }
+.alert-success { border-color: var(--c-success); background: var(--c-success-light); }
+.alert-warning { border-color: var(--c-warning); background: var(--c-warning-light); }
+.alert-danger { border-color: var(--c-danger); background: var(--c-danger-light); }
+
+/* ---------- Toast ---------- */
+.toast-container {
+  position: fixed;
+  z-index: 1100;
+  top: var(--sp-4);
+  right: var(--sp-4);
+  left: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  width: min(400px, calc(100vw - 2 * var(--sp-4)));
+  pointer-events: none;
+}
+.toast {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-2);
+  padding: var(--sp-3) var(--sp-4);
+  font-size: var(--fs-sm);
+  color: var(--c-text);
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-left: 4px solid var(--c-info);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  pointer-events: auto;
+  animation: cbt-fade-in 0.2s ease-out;
+}
+.toast-success, .toast-sukses { border-left-color: var(--c-success); }
+.toast-error { border-left-color: var(--c-danger); }
+.toast-warning, .toast-peringatan { border-left-color: var(--c-warning); }
+.toast-info { border-left-color: var(--c-info); }
+.toast.is-leaving { opacity: 0; transition: opacity 0.2s; }
+.toast-pesan { flex: 1 1 auto; min-width: 0; align-self: center; }
+.toast-close, .toast-tutup {
+  margin-left: auto;
+  min-width: 32px; min-height: 32px;
+  font-size: var(--fs-lg);
+  line-height: 1;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+/* ---------- Dialog ---------- */
+.dialog-backdrop {
+  position: fixed;
+  z-index: 1000;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-4);
+  background: rgba(0, 0, 0, 0.5);
+}
+.dialog {
+  width: 100%;
+  max-width: 480px;
+  max-height: calc(100vh - 2 * var(--sp-4));
+  overflow-y: auto;
+  padding: var(--sp-5);
+  background: var(--c-surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+}
+.dialog-title, .dialog-judul { margin: 0 0 var(--sp-3); font-size: var(--fs-lg); }
+.dialog-body, .dialog-pesan { margin: 0 0 var(--sp-4); }
+.dialog-actions, .dialog-aksi { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: var(--sp-2); }
+
+/* ---------- Memuat ---------- */
+.loading {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--fs-base);
+  color: var(--c-text-muted);
+}
+.loading-teks { font-size: var(--fs-base); }
+.loading-page { display: flex; justify-content: center; padding: var(--sp-6) var(--sp-4); }
+.loading-overlay {
+  position: fixed;
+  z-index: 1050;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.6);
+}
+.loading-overlay[hidden] { display: none; }
+.loading-overlay .loading {
+  padding: var(--sp-3) var(--sp-4);
+  background: var(--c-surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+}
+.spinner {
+  display: inline-block;
+  width: 20px; height: 20px;
+  border: 3px solid var(--c-primary-light);
+  border-top-color: var(--c-primary);
+  border-radius: 50%;
+  animation: cbt-spin 0.8s linear infinite;
+}
+
+/* ---------- Utilitas teks ---------- */
+.text-muted { color: var(--c-text-muted); }
+.text-danger { color: var(--c-danger); }
+.text-success { color: var(--c-success); }
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+
+@keyframes cbt-spin { to { transform: rotate(360deg); } }
+@keyframes cbt-fade-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+
+/* ---------- Layar kecil ---------- */
+@media (max-width: 480px) {
+  .container { padding: var(--sp-3); }
+  h1 { font-size: var(--fs-xl); }
+  h2 { font-size: var(--fs-lg); }
+  .dialog { padding: var(--sp-4); }
+  .dialog-actions .btn, .dialog-aksi .btn { flex: 1 1 auto; }
+  .toast-container { left: var(--sp-2); right: var(--sp-2); top: var(--sp-2); width: auto; }
+}

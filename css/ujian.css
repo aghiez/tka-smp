@@ -1,0 +1,607 @@
+/*
+ * ujian.css - CBT TKA
+ * Tata letak Halaman_Ujian mirip TKA dan tampilan Soal (dipakai juga oleh
+ * pratinjau Soal di admin-soal.js). Memakai variabel dari base.css.
+ * Requirements 8.14, 15.2, 15.3, 15.4, 15.10, 15.11, 17.4, 27.2, 27.3, 27.7, 27.8
+ *
+ * ======================================================================
+ * KONTRAK KELAS HALAMAN UJIAN (dipakai js/pages/ujian.js)
+ * ======================================================================
+ *
+ * <div class="ujian-layout" data-fs="sedang">     data-fs: kecil | sedang | besar
+ *                                                 (--fs-soal 14 / 16 / 20 px; bawaan sedang)
+ *                                                 .is-terkunci : input jawaban & navigasi
+ *                                                 nonaktif (waktu habis / mengumpulkan)
+ *   <header class="ujian-header">                 sticky di atas
+ *     <span class="ujian-brand">CBT TKA</span>
+ *     <div class="ujian-info">
+ *       <span class="ujian-mapel">Nama Mapel</span>
+ *       <span class="ujian-peserta">Nama Peserta</span>
+ *     </div>
+ *     <span class="ujian-timer" role="timer">01:05:09</span>
+ *                                                 .is-kritis : sisa <= 300 detik (merah)
+ *     <button class="ujian-panel-toggle" aria-controls="panel-nomor" aria-expanded="false">
+ *       Nomor Soal <span class="ujian-nomor-aktif">3/40</span>
+ *     </button>                                   hanya tampil < 768 px
+ *   </header>
+ *
+ *   <main class="ujian-main">                     grid 1fr 300px pada >= 768 px
+ *     <section class="ujian-konten">
+ *       <article class="ujian-soal" data-tipe="PG|PGK|BS">
+ *         <div class="soal-header">
+ *           <h2 class="soal-nomor">Soal No. 3</h2>
+ *           <div class="fs-switch" role="group" aria-label="Ukuran huruf">
+ *             <span class="fs-label">Ukuran huruf:</span>
+ *             <button class="fs-btn" data-fs="kecil" aria-pressed="false">A-</button>
+ *             <button class="fs-btn" data-fs="sedang" aria-pressed="true">A</button>
+ *             <button class="fs-btn" data-fs="besar" aria-pressed="false">A+</button>
+ *           </div>                                tombol aktif: aria-pressed="true" atau .is-aktif
+ *         </div>
+ *         <div class="soal-teks">...</div>         HTML Perender_Soal (span.m-*)
+ *         <div class="soal-gambar"><img ...></div> gagal: data-status="gagal" berisi
+ *                                                 <p class="gambar-gagal">Gambar tidak dapat dimuat</p>
+ *         <p class="soal-petunjuk">Pilih lebih dari satu jawaban</p>   (PGK)
+ *         <ul class="opsi-list">
+ *           <li class="opsi" data-opsi="A">       .is-terpilih (opsional; :has(:checked) juga didukung)
+ *             <label class="opsi-label">
+ *               <input type="radio|checkbox">
+ *               <span class="opsi-huruf">A.</span>
+ *               <span class="opsi-teks">...</span>
+ *             </label>
+ *           </li>
+ *         </ul>
+ *         (pratinjau admin saja: .opsi-kunci, .kunci-tanda, .soal-pembahasan,
+ *          .soal-pembahasan-judul, .soal-pembahasan-isi)
+ *       </article>
+ *     </section>
+ *
+ *     <aside class="ujian-panel" id="panel-nomor" aria-label="Nomor soal">
+ *                                                 < 768 px: panel geser dari kanan,
+ *                                                 dibuka dengan .is-open
+ *       <div class="ujian-panel-header">
+ *         <h2 class="ujian-panel-judul">Nomor Soal</h2>
+ *         <button class="ujian-panel-close" aria-label="Tutup panel nomor">&times;</button>
+ *       </div>                                    tombol tutup hanya tampil < 768 px
+ *       <div class="nomor-grid">
+ *         <button class="nomor-btn status-belum">1</button>
+ *         <button class="nomor-btn status-dijawab">2</button>
+ *         <button class="nomor-btn status-ragu is-aktif" aria-current="true">3</button>
+ *       </div>                                    status: .status-belum | .status-dijawab | .status-ragu
+ *                                                 nomor dibuka: .is-aktif (atau aria-current="true")
+ *       <ul class="nomor-legend">
+ *         <li class="legend-item"><span class="legend-swatch status-belum"></span>Belum dijawab</li>
+ *         <li class="legend-item"><span class="legend-swatch status-dijawab"></span>Sudah dijawab</li>
+ *         <li class="legend-item"><span class="legend-swatch status-ragu"></span>Ragu-ragu</li>
+ *         <li class="legend-item"><span class="legend-swatch is-aktif"></span>Sedang dibuka</li>
+ *       </ul>
+ *     </aside>
+ *   </main>
+ *
+ *   <div class="ujian-panel-backdrop"></div>      < 768 px: tampil dengan .is-open (klik = tutup)
+ *
+ *   <footer class="ujian-footer">                 sticky di bawah
+ *     <button class="btn ujian-btn-prev">Sebelumnya</button>     [disabled] pada Soal no. 1
+ *     <button class="btn ujian-btn-ragu" aria-pressed="false">Ragu-ragu</button>
+ *                                                 aktif: aria-pressed="true" atau .is-aktif
+ *     <span class="simpan-indikator" data-state="TERSIMPAN" aria-live="polite">Tersimpan</span>
+ *                                                 data-state: MENYIMPAN | TERSIMPAN | BELUM_TERSIMPAN
+ *                                                 (nilai AnswerQueue.state()); alias kelas
+ *                                                 .is-menyimpan | .is-tersimpan | .is-belum-tersimpan
+ *     <button class="btn btn-primary ujian-btn-next">Berikutnya</button>
+ *                                                 Soal terakhir: ganti dengan
+ *                                                 <button class="btn btn-danger ujian-btn-selesai">Selesai</button>
+ *   </footer>
+ * </div>
+ *
+ * Opsional: ujian.js boleh mengisi --ujian-header-h dan --ujian-footer-h
+ * (px) pada .ujian-layout dengan tinggi aktual agar Panel_Nomor desktop pas.
+ * ======================================================================
+ */
+
+:root {
+  --fs-soal: 16px;            /* ukuran bawaan "sedang" (Requirement 15.10, 27.7) */
+  --status-belum-bg: #ffffff;
+  --status-belum-fg: #212121;
+  --status-belum-border: #9aa0a6;
+  --status-dijawab-bg: #1565c0;
+  --status-dijawab-fg: #ffffff;
+  --status-ragu-bg: #f9a825;
+  --status-ragu-fg: #212121;
+  --aktif-ring: #000000;
+}
+
+/* ---------- Ukuran huruf soal (Requirement 15.10) ---------- */
+.ujian-layout { --fs-soal: 16px; }
+.ujian-layout[data-fs="kecil"] { --fs-soal: 14px; }
+.ujian-layout[data-fs="sedang"] { --fs-soal: 16px; }
+.ujian-layout[data-fs="besar"] { --fs-soal: 20px; }
+
+/* ---------- Kerangka halaman ---------- */
+.ujian-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-width: 0;
+  max-width: 100%;
+  background: var(--c-bg);
+}
+
+/* Header sticky: nama Peserta, Mapel, Timer selalu terlihat (Requirement 15.2) */
+.ujian-header {
+  position: sticky;
+  top: 0;
+  z-index: 800;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2) var(--sp-4);
+  padding: var(--sp-2) var(--sp-4);
+  color: #fff;
+  background: var(--c-primary-dark);
+  box-shadow: var(--shadow);
+  min-width: 0;
+}
+.ujian-brand {
+  flex: 0 0 auto;
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  white-space: nowrap;
+}
+.ujian-info {
+  flex: 1 1 200px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 var(--sp-4);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.ujian-mapel { font-size: var(--fs-base); font-weight: 700; min-width: 0; }
+.ujian-peserta { font-size: var(--fs-sm); opacity: 0.95; min-width: 0; }
+
+/* Timer (Requirement 17.3, 17.4) */
+.ujian-timer {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--touch);
+  padding: var(--sp-1) var(--sp-3);
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  color: var(--c-primary-dark);
+  background: #fff;
+  border: 2px solid #fff;
+  border-radius: var(--radius);
+}
+.ujian-timer.is-kritis {
+  color: #fff;
+  background: var(--c-danger);
+  border-color: #ffcdd2;
+  animation: ujian-kedip 1s ease-in-out infinite alternate;
+}
+@keyframes ujian-kedip { from { box-shadow: 0 0 0 0 rgba(255, 205, 210, 0.9); } to { box-shadow: 0 0 0 4px rgba(255, 205, 210, 0); } }
+
+/* Tombol pembuka Panel_Nomor (hanya < 768 px) */
+.ujian-panel-toggle {
+  flex: 0 0 auto;
+  display: none;
+  align-items: center;
+  gap: var(--sp-2);
+  min-width: var(--touch);
+  min-height: var(--touch);
+  padding: var(--sp-1) var(--sp-3);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: #fff;
+  background: transparent;
+  border: 2px solid #fff;
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+.ujian-panel-toggle:hover { background: rgba(255, 255, 255, 0.15); }
+.ujian-nomor-aktif {
+  padding: 0 var(--sp-2);
+  font-variant-numeric: tabular-nums;
+  color: var(--c-primary-dark);
+  background: #fff;
+  border-radius: 999px;
+}
+
+/* Pemberitahuan waktu hampir habis / habis (Requirement 17.5, 17.6, 17.13) */
+.ujian-pemberitahuan-wadah:empty { display: none; }
+.ujian-pemberitahuan-wadah { padding: var(--sp-2) var(--sp-3) 0; }
+.ujian-pemberitahuan {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2);
+  margin: 0 0 var(--sp-2);
+}
+.ujian-pemberitahuan-teks { flex: 1 1 12rem; min-width: 0; }
+.ujian-pemberitahuan-tutup { min-width: var(--touch); min-height: var(--touch); }
+
+/* ---------- Area utama ---------- */
+.ujian-main {
+  flex: 1 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--sp-4);
+  align-items: start;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: var(--sp-4);
+  min-width: 0;
+}
+.ujian-konten {
+  min-width: 0;
+  padding: var(--sp-4) var(--sp-5);
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+/* ---------- Soal (Halaman_Ujian dan pratinjau admin) ---------- */
+.ujian-soal { min-width: 0; overflow-wrap: anywhere; }
+.soal-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2) var(--sp-4);
+  padding-bottom: var(--sp-3);
+  margin-bottom: var(--sp-4);
+  border-bottom: 2px solid var(--c-primary-light);
+}
+.soal-nomor { margin: 0; font-size: var(--fs-lg); color: var(--c-primary-dark); }
+
+.fs-switch { display: inline-flex; flex-wrap: wrap; align-items: center; gap: var(--sp-2); }
+.fs-label { font-size: var(--fs-sm); color: var(--c-text-muted); }
+.fs-btn {
+  min-width: var(--touch);
+  min-height: var(--touch);
+  padding: 0 var(--sp-2);
+  font-size: var(--fs-base);
+  font-weight: 700;
+  color: var(--c-primary);
+  background: var(--c-surface);
+  border: 1px solid var(--c-primary);
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+.fs-btn[data-fs="kecil"] { font-size: var(--fs-sm); }
+.fs-btn[data-fs="besar"] { font-size: var(--fs-lg); }
+.fs-btn:hover { background: var(--c-primary-light); }
+.fs-btn[aria-pressed="true"], .fs-btn.is-aktif { color: #fff; background: var(--c-primary); }
+
+.soal-teks {
+  font-size: var(--fs-soal);
+  line-height: 1.6;
+  margin-bottom: var(--sp-4);
+  overflow-wrap: anywhere;
+}
+
+/* Gambar tidak melebihi lebar wadah, rasio dipertahankan (Requirement 8.14, 27.2) */
+.soal-gambar { margin: 0 0 var(--sp-4); max-width: 100%; }
+.soal-gambar img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--radius);
+}
+.gambar-gagal {
+  margin: 0;
+  padding: var(--sp-3);
+  font-size: var(--fs-sm);
+  color: var(--c-text-muted);
+  background: #f8fafc;
+  border: 1px dashed var(--c-border);
+  border-radius: var(--radius);
+}
+
+.soal-petunjuk {
+  margin: 0 0 var(--sp-3);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  font-style: italic;
+  color: var(--c-info);
+}
+
+/* Opsi: area sentuh >= 44x44 px, jarak 8 px (Requirement 27.3) */
+.opsi-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.opsi { min-width: 0; }
+.opsi-label {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-3);
+  min-height: var(--touch);
+  padding: var(--sp-2) var(--sp-3);
+  font-size: var(--fs-soal);
+  line-height: 1.5;
+  background: var(--c-surface);
+  border: 2px solid var(--c-border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  min-width: 0;
+}
+.opsi-label:hover { border-color: var(--c-primary); background: #f8fbff; }
+.opsi-label input[type="radio"], .opsi-label input[type="checkbox"] {
+  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+  margin: 2px 0 0;
+  cursor: inherit;
+}
+.opsi-label:focus-within { outline: 3px solid var(--c-focus); outline-offset: 2px; }
+.opsi-huruf { flex: 0 0 auto; font-weight: 700; min-width: 1.5em; }
+.opsi-teks { flex: 1 1 auto; min-width: 0; overflow-wrap: anywhere; }
+.opsi-label:has(input:checked), .opsi.is-terpilih .opsi-label {
+  border-color: var(--c-primary);
+  background: var(--c-primary-light);
+}
+
+/* Pratinjau admin: penanda kunci & pembahasan (outline kunci di admin.css) */
+.kunci-tanda { flex: 0 0 auto; align-self: center; }
+.soal-pembahasan {
+  margin-top: var(--sp-5);
+  padding: var(--sp-3) var(--sp-4);
+  background: var(--c-success-light);
+  border-left: 4px solid var(--c-success);
+  border-radius: var(--radius);
+}
+.soal-pembahasan-judul { margin: 0 0 var(--sp-2); font-size: var(--fs-base); }
+.soal-pembahasan-isi { font-size: var(--fs-soal); overflow-wrap: anywhere; }
+
+/* Input terkunci (waktu habis / mengumpulkan) */
+.ujian-layout.is-terkunci .opsi-label,
+.opsi-label:has(input:disabled) { cursor: not-allowed; opacity: 0.7; }
+.ujian-layout.is-terkunci .opsi-label:hover { border-color: var(--c-border); background: var(--c-surface); }
+
+/* ---------- Markup_Soal (Perender_Soal: span.m-*) ---------- */
+.m-akar { display: inline-flex; align-items: flex-start; white-space: nowrap; }
+.m-radikan {
+  display: inline-block;
+  padding: 0 2px;
+  border-top: 1.5px solid currentColor;
+  white-space: normal;
+}
+.m-frac {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: stretch;
+  vertical-align: middle;
+  margin: 0 2px;
+  text-align: center;
+  line-height: 1.25;
+}
+.m-num, .m-den { display: block; padding: 0 3px; }
+.m-num { border-bottom: 1.5px solid currentColor; }
+.soal-teks sup, .soal-teks sub, .opsi-teks sup, .opsi-teks sub { line-height: 0; }
+
+/* ---------- Panel_Nomor ---------- */
+.ujian-panel {
+  min-width: 0;
+  padding: var(--sp-4);
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+.ujian-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-3);
+}
+.ujian-panel-judul { margin: 0; font-size: var(--fs-lg); }
+.ujian-panel-close {
+  display: none;
+  min-width: var(--touch);
+  min-height: var(--touch);
+  font-size: var(--fs-xl);
+  line-height: 1;
+  background: transparent;
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.nomor-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(var(--touch), 1fr));
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-4);
+}
+.nomor-btn {
+  min-width: var(--touch);
+  min-height: var(--touch);
+  padding: 0;
+  font-size: var(--fs-base);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  border: 2px solid transparent;
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+/* Warna Status_Soal (Requirement 15.3) */
+.nomor-btn.status-belum, .legend-swatch.status-belum {
+  color: var(--status-belum-fg);
+  background: var(--status-belum-bg);
+  border-color: var(--status-belum-border);
+}
+.nomor-btn.status-dijawab, .legend-swatch.status-dijawab {
+  color: var(--status-dijawab-fg);
+  background: var(--status-dijawab-bg);
+  border-color: var(--status-dijawab-bg);
+}
+.nomor-btn.status-ragu, .legend-swatch.status-ragu {
+  color: var(--status-ragu-fg);
+  background: var(--status-ragu-bg);
+  border-color: var(--status-ragu-bg);
+}
+.nomor-btn:hover { filter: brightness(0.94); }
+
+/* Penanda nomor yang dibuka: cincin hitam tebal + garis bawah, beda dari 3 warna status */
+.nomor-btn.is-aktif, .nomor-btn[aria-current="true"] {
+  box-shadow: inset 0 0 0 3px var(--aktif-ring), inset 0 0 0 5px #fff;
+  text-decoration: underline;
+  text-decoration-thickness: 3px;
+  text-underline-offset: 3px;
+}
+
+/* Keterangan warna (Requirement 15.4) */
+.nomor-legend {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: var(--sp-2);
+  margin: 0;
+  padding: var(--sp-3) 0 0;
+  list-style: none;
+  font-size: var(--fs-sm);
+  border-top: 1px solid var(--c-border);
+}
+.legend-item { display: flex; align-items: center; gap: var(--sp-2); min-width: 0; }
+.legend-swatch {
+  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+  border: 2px solid var(--c-border);
+  border-radius: 4px;
+  background: var(--c-surface);
+}
+.legend-swatch.is-aktif {
+  background: var(--status-belum-bg);
+  border-color: var(--aktif-ring);
+  box-shadow: inset 0 0 0 1px var(--aktif-ring);
+}
+
+.ujian-panel-backdrop { display: none; }
+
+/* ---------- Footer sticky: navigasi dan indikator simpan ---------- */
+.ujian-footer {
+  position: sticky;
+  bottom: 0;
+  z-index: 800;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-2) var(--sp-4);
+  background: var(--c-surface);
+  border-top: 1px solid var(--c-border);
+  box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.08);
+  min-width: 0;
+}
+.ujian-footer .btn { min-height: var(--touch); min-width: var(--touch); }
+.ujian-btn-ragu[aria-pressed="true"], .ujian-btn-ragu.is-aktif {
+  color: var(--status-ragu-fg);
+  background: var(--status-ragu-bg);
+  border-color: var(--c-warning-dark);
+}
+.ujian-btn-next, .ujian-btn-selesai { margin-left: auto; }
+
+.simpan-indikator {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  margin-left: auto;
+  font-size: var(--fs-sm);
+  color: var(--c-text-muted);
+  min-width: 0;
+}
+.simpan-indikator + .ujian-btn-next, .simpan-indikator + .ujian-btn-selesai { margin-left: 0; }
+.simpan-indikator::before {
+  content: "";
+  flex: 0 0 auto;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.simpan-indikator[data-state="MENYIMPAN"], .simpan-indikator.is-menyimpan { color: var(--c-info); }
+.simpan-indikator[data-state="MENYIMPAN"]::before, .simpan-indikator.is-menyimpan::before {
+  background: transparent;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  animation: cbt-spin 0.8s linear infinite;
+}
+.simpan-indikator[data-state="TERSIMPAN"], .simpan-indikator.is-tersimpan { color: var(--c-success); }
+.simpan-indikator[data-state="BELUM_TERSIMPAN"], .simpan-indikator.is-belum-tersimpan {
+  color: var(--c-danger);
+  font-weight: 600;
+}
+
+/* ---------- >= 768 px: grid 1fr 300px (design) ---------- */
+@media (min-width: 768px) {
+  .ujian-main { grid-template-columns: minmax(0, 1fr) 300px; }
+  .ujian-panel {
+    position: sticky;
+    top: calc(var(--ujian-header-h, 64px) + var(--sp-4));
+    max-height: calc(100vh - var(--ujian-header-h, 64px) - var(--ujian-footer-h, 64px) - 2 * var(--sp-4));
+    overflow-y: auto;
+  }
+}
+
+/* ---------- < 768 px: Panel_Nomor jadi panel geser (Requirement 15.11, 27.8) ---------- */
+@media (max-width: 767.98px) {
+  .ujian-header { gap: var(--sp-2); padding: var(--sp-2) var(--sp-3); }
+  .ujian-brand { display: none; }
+  .ujian-panel-toggle { display: inline-flex; }
+  .ujian-main { padding: var(--sp-3); gap: var(--sp-3); }
+  .ujian-konten { padding: var(--sp-3) var(--sp-4); }
+
+  .ujian-panel {
+    position: fixed;
+    z-index: 900; /* di atas header/footer, di bawah dialog (1000) dan toast (1100) */
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: min(320px, 88vw);
+    max-width: 100%;
+    overflow-y: auto;
+    border-radius: 0;
+    border-width: 0 0 0 1px;
+    box-shadow: var(--shadow-lg);
+    transform: translateX(100%);
+    visibility: hidden;
+    transition: transform 0.25s ease-out, visibility 0s linear 0.25s;
+  }
+  .ujian-panel.is-open {
+    transform: none;
+    visibility: visible;
+    transition: transform 0.25s ease-out, visibility 0s;
+  }
+  .ujian-panel-close { display: inline-flex; align-items: center; justify-content: center; }
+
+  .ujian-panel-backdrop.is-open {
+    display: block;
+    position: fixed;
+    z-index: 890;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+  }
+
+  .ujian-footer { padding: var(--sp-2) var(--sp-3); }
+  .ujian-footer .btn { flex: 1 1 0; padding: var(--sp-2); }
+  .ujian-btn-next, .ujian-btn-selesai { margin-left: 0; }
+  /* Indikator simpan pindah ke baris sendiri agar tombol tidak terpotong */
+  .simpan-indikator { order: -1; flex: 1 1 100%; margin-left: 0; justify-content: center; }
+}
+
+@media (max-width: 400px) {
+  .ujian-timer { font-size: var(--fs-base); padding: var(--sp-1) var(--sp-2); }
+  .ujian-info { flex-basis: 100%; order: -1; }
+}

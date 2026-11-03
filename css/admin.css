@@ -1,0 +1,205 @@
+/*
+ * admin.css - CBT TKA
+ * Tata letak Halaman Admin (dan kerangka umum halaman Peserta non-ujian).
+ *
+ * KELAS:
+ *   Kerangka    : .layout, .topbar, .topbar-brand, .topbar-user, .nav-toggle,
+ *                 .sidebar, .nav, .nav-link, .nav-link.is-active, .content,
+ *                 .page-header, .page-title, .page-actions
+ *   Dashboard   : .stats-grid, .stat-card, .stat-value, .stat-label
+ *   Filter      : .toolbar, .toolbar .field
+ *   Mapel       : .mapel-status, .badge-belum-siap (peringatan Mapel belum siap)
+ *   Soal        : .soal-preview, .markup-help
+ *   Import      : .import-steps, .import-summary, .import-errors
+ *   Login       : .auth-page, .auth-card, .auth-title
+ *   Status sesi : .status-belum, .status-sedang, .status-selesai
+ */
+
+/* ---------- Kerangka ---------- */
+.layout {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  grid-template-rows: auto 1fr;
+  grid-template-areas:
+    "topbar topbar"
+    "sidebar content";
+  min-height: 100vh;
+}
+
+.topbar {
+  grid-area: topbar;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+  min-height: 56px;
+  padding: var(--sp-2) var(--sp-4);
+  color: #fff;
+  background: var(--c-primary);
+  box-shadow: var(--shadow);
+}
+.topbar-brand { font-size: var(--fs-lg); font-weight: 700; color: #fff; text-decoration: none; }
+.topbar-user {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin-left: auto;
+  font-size: var(--fs-sm);
+  min-width: 0;
+}
+.topbar .btn { color: #fff; background: transparent; border-color: rgba(255, 255, 255, 0.6); }
+.topbar .btn:hover { background: rgba(255, 255, 255, 0.15); }
+
+.nav-toggle { display: none; }
+
+.sidebar {
+  grid-area: sidebar;
+  background: var(--c-surface);
+  border-right: 1px solid var(--c-border);
+  padding: var(--sp-3) 0;
+}
+.nav { display: flex; flex-direction: column; margin: 0; padding: 0; list-style: none; }
+.nav-link {
+  display: flex;
+  align-items: center;
+  min-height: var(--touch);
+  padding: var(--sp-2) var(--sp-4);
+  font-size: var(--fs-base);
+  color: var(--c-text);
+  text-decoration: none;
+  border-left: 4px solid transparent;
+}
+.nav-link:hover { background: var(--c-primary-light); color: var(--c-primary-dark); }
+.nav-link.is-active {
+  font-weight: 600;
+  color: var(--c-primary-dark);
+  background: var(--c-primary-light);
+  border-left-color: var(--c-primary);
+}
+
+.content {
+  grid-area: content;
+  min-width: 0; /* agar .table-wrap yang lebar tidak melebarkan halaman */
+  padding: var(--sp-5);
+}
+.content > * + * { margin-top: var(--sp-4); }
+
+.page-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-3);
+}
+.page-title { margin: 0; font-size: var(--fs-xl); }
+.page-actions { display: flex; flex-wrap: wrap; gap: var(--sp-2); margin-left: auto; }
+
+/* ---------- Dashboard ---------- */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--sp-4);
+}
+.stat-card {
+  padding: var(--sp-4);
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+.stat-value { font-size: var(--fs-xxl); font-weight: 700; color: var(--c-primary-dark); }
+.stat-label { font-size: var(--fs-sm); color: var(--c-text-muted); }
+
+/* ---------- Toolbar filter/pencarian ---------- */
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--sp-3);
+}
+.toolbar .field { flex: 1 1 200px; min-width: 0; }
+.toolbar .btn { flex: 0 0 auto; }
+
+/* ---------- Mapel ---------- */
+.mapel-status { display: inline-flex; flex-wrap: wrap; gap: var(--sp-1); align-items: center; }
+/* Peringatan Mapel aktif yang belum siap (mis. jumlah Soal kurang). */
+.badge-belum-siap {
+  color: var(--c-warning-dark);
+  background: var(--c-warning-light);
+  border-color: var(--c-warning);
+}
+.badge-belum-siap::before { content: "\26A0\FE0E  "; }
+
+/* ---------- Soal ---------- */
+.soal-preview {
+  padding: var(--sp-4);
+  background: var(--c-surface);
+  border: 1px dashed var(--c-border);
+  border-radius: var(--radius);
+  overflow-wrap: anywhere;
+}
+.soal-preview img { max-width: 100%; height: auto; }
+/* Penanda kunci pada pratinjau (kelas opsi lain diatur ujian.css). */
+.soal-preview .opsi-kunci { outline: 2px solid var(--c-success); outline-offset: 2px; border-radius: var(--radius); }
+.soal-preview .kunci-tanda { margin-left: var(--sp-2); }
+.soal-preview .gambar-gagal { padding: var(--sp-3); color: var(--c-text-muted); border: 1px dashed var(--c-border); }
+.markup-toolbar { flex-wrap: wrap; }
+.markup-help { font-size: var(--fs-sm); color: var(--c-text-muted); }
+.markup-help code { background: #eceff1; padding: 0 var(--sp-1); border-radius: 3px; }
+
+/* ---------- Import ---------- */
+.import-steps { margin: 0; padding-left: var(--sp-5); }
+.import-steps li + li { margin-top: var(--sp-2); }
+.import-summary { display: flex; flex-wrap: wrap; gap: var(--sp-3); }
+.import-errors { max-height: 320px; overflow-y: auto; }
+
+/* ---------- Login / Ganti password ---------- */
+.auth-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: var(--sp-4);
+}
+.auth-card { width: 100%; max-width: 400px; }
+.auth-title { text-align: center; color: var(--c-primary-dark); }
+
+/* ---------- Status sesi pada tabel ---------- */
+.status-belum { color: var(--c-text-muted); }
+.status-sedang { color: var(--c-warning-dark); font-weight: 600; }
+.status-selesai { color: var(--c-success); font-weight: 600; }
+
+/* ---------- Responsif ---------- */
+@media (max-width: 1023px) {
+  .layout { grid-template-columns: 200px minmax(0, 1fr); }
+  .content { padding: var(--sp-4); }
+}
+
+@media (max-width: 767px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "topbar"
+      "content";
+  }
+  .nav-toggle { display: inline-flex; }
+  .sidebar {
+    position: fixed;
+    z-index: 90;
+    top: 56px;
+    left: 0;
+    bottom: 0;
+    width: min(280px, 85vw);
+    overflow-y: auto;
+    transform: translateX(-100%);
+    transition: transform 0.2s ease-out;
+    box-shadow: var(--shadow-lg);
+  }
+  .sidebar.is-open { transform: none; }
+  .content { padding: var(--sp-3); }
+  .page-actions { margin-left: 0; width: 100%; }
+  .toolbar .btn { flex: 1 1 auto; }
+}

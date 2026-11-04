@@ -1,0 +1,728 @@
+/* ======================================================================
+ * anbk.css - CBT TKA
+ * Meniru tampilan Aplikasi ANBK / Simulasi TKA Pusmendik:
+ * - Header biru "PUSMENDIK / APLIKASI ANBK" dengan pola geometris ringan.
+ * - Kartu putih besar, sudut membulat, bayangan lembut di atas latar
+ *   abu-abu kebiruan (halaman ujian/hasil) atau biru bertitik (halaman
+ *   pilih/simulasi).
+ * - Tombol navigasi berbentuk pil: Sebelumnya = merah muda,
+ *   Ragu-ragu = kuning, Berikutnya = biru, Selesai = merah.
+ * - Di soal TERAKHIR tidak ada tombol "Soal berikutnya": footer hanya
+ *   menampilkan tombol pil merah "Selesai" (diatur js/pages/ujian.js
+ *   lewat perbaruiNavigasi(), kelas .ujian-btn-selesai).
+ * ====================================================================== */
+
+:root {
+  --anbk-blue: #356ea2;
+  --anbk-blue-dark: #2b5c89;
+  --anbk-blue-deep: #245276;
+  --anbk-blue-bright: #1e7ef5;
+  --anbk-blue-btn: #2f7fd0;
+  --anbk-bg: #edf1f5;
+  --anbk-teks-red: #d93636;
+  --anbk-prev-bg: #f0a7b5;
+  --anbk-prev-fg: #7d1225;
+  --anbk-ragu-bg: #ffca28;
+  --anbk-green: #2fa84f;
+  --anbk-border-soft: #e3e9f0;
+}
+
+/* ---------- Kepala ANBK bersama (login, konfirmasi, hasil) ---------- */
+.anbk-topbar {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  min-height: 84px;
+  padding: var(--sp-3) var(--sp-5);
+  color: #fff;
+  background:
+    linear-gradient(115deg, rgba(255, 255, 255, 0.10) 0 18%, transparent 18%),
+    linear-gradient(245deg, rgba(0, 0, 0, 0.10) 0 22%, transparent 22%),
+    linear-gradient(90deg, var(--anbk-blue-dark), var(--anbk-blue));
+}
+.anbk-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  min-width: 0;
+}
+.anbk-logo {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  font-size: 28px;
+  line-height: 1;
+  background: rgba(255, 255, 255, 0.16);
+  border: 2px solid rgba(255, 255, 255, 0.55);
+  border-radius: 50%;
+}
+.anbk-brand-teks { display: flex; flex-direction: column; line-height: 1.15; min-width: 0; }
+.anbk-brand-nama { font-size: 20px; font-weight: 800; letter-spacing: 0.6px; }
+.anbk-brand-sub { font-size: 12px; font-weight: 600; letter-spacing: 1.2px; opacity: 0.92; }
+.anbk-topbar-kanan {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  text-align: right;
+  min-width: 0;
+}
+.anbk-topbar-kanan .btn {
+  color: #fff;
+  background: transparent;
+  border-color: rgba(255, 255, 255, 0.65);
+  border-radius: 999px;
+}
+.anbk-topbar-kanan .btn:hover { background: rgba(255, 255, 255, 0.16); }
+.anbk-user-ikon {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  font-size: 20px;
+  background: rgba(255, 255, 255, 0.22);
+  border-radius: 8px;
+}
+.anbk-copyright {
+  width: fit-content;
+  margin: var(--sp-5) auto var(--sp-4);
+  padding: var(--sp-1) var(--sp-4);
+  font-size: var(--fs-sm);
+  color: var(--c-text-muted);
+  background: #fff;
+  border-radius: 999px;
+  box-shadow: var(--shadow);
+}
+
+/* ---------- Modal umum (dipakai CBT.ui.modal, mis. Informasi Soal) ---------- */
+.modal-overlay {
+  position: fixed;
+  z-index: 1000;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-4);
+  background: rgba(15, 35, 60, 0.5);
+}
+.modal {
+  width: 100%;
+  max-width: 520px;
+  max-height: calc(100vh - 2 * var(--sp-4));
+  overflow-y: auto;
+  background: var(--c-surface);
+  border-radius: 14px;
+  box-shadow: var(--shadow-lg);
+}
+.modal-kepala {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding: var(--sp-4) var(--sp-5);
+  color: #fff;
+  background: linear-gradient(90deg, var(--anbk-blue-dark), var(--anbk-blue));
+  border-radius: 14px 14px 0 0;
+}
+.modal-judul { margin: 0; font-size: var(--fs-lg); }
+.modal-tutup {
+  flex: 0 0 auto;
+  min-width: 36px;
+  min-height: 36px;
+  font-size: var(--fs-xl);
+  line-height: 1;
+  color: #fff;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 50%;
+  cursor: pointer;
+}
+.modal-isi { padding: var(--sp-4) var(--sp-5); }
+.modal-isi p { margin: 0 0 var(--sp-2); }
+
+/* ---------- Login (seperti layar "Selamat Datang" ANBK) ---------- */
+.anbk-login-page { min-height: 100vh; background: #eef2f6; }
+.anbk-login-page .anbk-topbar { min-height: 118px; }
+.anbk-login-wrap {
+  display: flex;
+  justify-content: center;
+  padding: var(--sp-6) var(--sp-4) var(--sp-4);
+}
+.anbk-login-card {
+  width: 100%;
+  max-width: 430px;
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 18px 45px rgba(31, 68, 120, 0.22);
+}
+.anbk-login-body { padding: var(--sp-6) var(--sp-6) var(--sp-5); }
+.anbk-login-judul { margin: 0 0 var(--sp-1); font-size: var(--fs-xl); font-weight: 700; }
+.anbk-login-sub { margin: 0 0 var(--sp-5); color: var(--c-text); }
+.anbk-login-card .field { position: relative; }
+.anbk-login-card .field-label { font-weight: 500; color: var(--c-text-muted); }
+.anbk-login-card input[type="text"],
+.anbk-login-card input[type="password"] {
+  border: none;
+  border-bottom: 1px solid #b9c2cc;
+  border-radius: 0;
+  padding-left: 34px;
+  background: transparent;
+}
+.anbk-login-card input[type="text"]:focus,
+.anbk-login-card input[type="password"]:focus {
+  border-bottom: 2px solid var(--anbk-blue-bright);
+  outline: none;
+}
+.anbk-field-ikon {
+  position: absolute;
+  left: 4px;
+  bottom: 10px;
+  font-size: 17px;
+  color: #5f6b7a;
+  pointer-events: none;
+}
+.anbk-field-error-slot { min-height: 0; }
+.anbk-login-btn {
+  margin-top: var(--sp-2);
+  min-height: 48px;
+  font-size: var(--fs-base);
+  background: var(--anbk-blue-bright);
+  border-color: var(--anbk-blue-bright);
+  border-radius: 999px;
+}
+.anbk-login-btn:hover { background: #0f6ae0; border-color: #0f6ae0; }
+
+/* ---------- Pilih ujian (seperti layar awal "Simulasi TKA") ---------- */
+.anbk-pilih-page {
+  min-height: 100vh;
+  padding-bottom: var(--sp-6);
+  background-color: #3a74a8;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.20) 1.4px, transparent 1.5px);
+  background-size: 22px 22px;
+}
+.anbk-pilih-kepala {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-3);
+  padding: var(--sp-5) var(--sp-4) var(--sp-4);
+  color: #fff;
+  text-align: left;
+}
+.anbk-pilih-kepala .anbk-logo { width: 58px; height: 58px; }
+.anbk-pilih-kepala .anbk-brand-nama { font-size: 24px; }
+.anbk-pilih-keluar { position: absolute; top: var(--sp-4); right: var(--sp-4); }
+.anbk-pilih-page { position: relative; }
+.anbk-pilih-kartu {
+  width: calc(100% - 2 * var(--sp-4));
+  max-width: 580px;
+  margin: var(--sp-3) auto 0;
+  padding: var(--sp-6) var(--sp-6) var(--sp-5);
+  text-align: center;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 18px 45px rgba(16, 47, 82, 0.30);
+}
+.anbk-pilih-ikon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 76px;
+  height: 76px;
+  margin-bottom: var(--sp-3);
+  font-size: 38px;
+  color: #fff;
+  background: var(--anbk-blue);
+  border-radius: 50%;
+  box-shadow: 0 8px 20px rgba(53, 110, 162, 0.45);
+}
+.anbk-pilih-judul { margin: 0 0 var(--sp-1); font-size: var(--fs-xxl); }
+.anbk-pilih-sub { margin: 0 0 var(--sp-2); color: var(--c-text-muted); }
+.anbk-pilih-identitas { margin: 0 0 var(--sp-4); font-weight: 600; }
+.anbk-mapel {
+  margin-top: var(--sp-4);
+  padding-top: var(--sp-4);
+  text-align: left;
+  border-top: 1px solid var(--anbk-border-soft);
+}
+.anbk-mapel-label {
+  display: block;
+  margin-bottom: var(--sp-1);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+}
+.anbk-mapel-kotak {
+  padding: var(--sp-3) var(--sp-4);
+  background: #fff;
+  border: 1px solid #ccd6e0;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(31, 68, 120, 0.08);
+}
+.anbk-mapel-nama { display: block; font-weight: 600; }
+.anbk-mapel-meta { display: block; margin-top: 2px; font-size: var(--fs-sm); color: var(--c-text-muted); }
+.anbk-mapel .btn { margin-top: var(--sp-3); border-radius: 999px; }
+.anbk-mapel .btn-primary { background: var(--anbk-blue-btn); border-color: var(--anbk-blue-btn); }
+.anbk-pilih-kosong { padding: var(--sp-4) 0 var(--sp-2); color: var(--c-text-muted); }
+
+/* ---------- Konfirmasi (seperti "Konfirmasi data Peserta" / "Konfirmasi Tes") ---------- */
+.anbk-konfirmasi-page { min-height: 100vh; background: var(--anbk-bg); }
+.anbk-konfirmasi-bungkus {
+  width: calc(100% - 2 * var(--sp-4));
+  max-width: 620px;
+  margin: var(--sp-5) auto var(--sp-6);
+}
+.anbk-konfirmasi-kartu {
+  padding: var(--sp-5) var(--sp-6);
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 14px 35px rgba(31, 68, 120, 0.18);
+}
+.anbk-konfirmasi-judul { margin: 0 0 var(--sp-4); font-size: var(--fs-xl); font-weight: 700; }
+.anbk-baris { padding: var(--sp-2) 0; border-bottom: 1px solid var(--anbk-border-soft); }
+.anbk-baris-label { display: block; font-size: var(--fs-sm); font-weight: 700; }
+.anbk-baris-nilai { display: block; margin-top: 1px; }
+.anbk-konfirmasi-subjudul { margin: var(--sp-5) 0 var(--sp-2); font-size: var(--fs-base); }
+.anbk-tata-tertib { margin: 0; padding-left: var(--sp-5); font-size: var(--fs-sm); color: var(--c-text-muted); }
+.anbk-tata-tertib li + li { margin-top: var(--sp-1); }
+.anbk-konfirmasi-aksi { display: flex; flex-wrap: wrap; gap: var(--sp-3); margin-top: var(--sp-5); }
+.anbk-konfirmasi-aksi .btn { border-radius: 999px; min-height: 48px; }
+.anbk-konfirmasi-aksi .anbk-btn-mulai { flex: 1 1 220px; background: var(--anbk-blue-bright); border-color: var(--anbk-blue-bright); }
+.anbk-konfirmasi-aksi .anbk-btn-mulai:hover { background: #0f6ae0; border-color: #0f6ae0; }
+.anbk-konfirmasi-aksi .anbk-btn-kembali { flex: 0 1 160px; }
+
+/* ---------- Verifikasi ANBK (token, form konfirmasi, konfirmasi tes) ---------- */
+/* Pil token di atas kartu, seperti "Token: 3ML45M [Refresh]" di ANBK. */
+.anbk-token-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-3);
+}
+.anbk-token-pil {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-2) var(--sp-3);
+  background: #fff;
+  border: 2px solid #bcd6ee;
+  border-radius: 10px;
+  font-size: var(--fs-base);
+}
+.anbk-token-kode { font-weight: 800; letter-spacing: 3px; color: var(--anbk-blue-dark); }
+.anbk-token-refresh {
+  border: 1px solid var(--anbk-blue-btn);
+  background: #fff;
+  color: var(--anbk-blue-btn);
+  border-radius: 8px;
+  padding: 2px 10px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.anbk-token-refresh:hover { background: #eaf3fd; }
+.anbk-token-sisa { font-size: var(--fs-sm); color: var(--c-text-muted); }
+
+/* Form verifikasi di dalam kartu konfirmasi. */
+.anbk-verif-form { margin-top: var(--sp-4); display: flex; flex-direction: column; gap: var(--sp-3); }
+.anbk-verif-form .field-label { font-size: var(--fs-base); }
+.anbk-tgl-baris { display: flex; gap: var(--sp-2); }
+.anbk-tgl-baris input { text-align: center; }
+.anbk-tgl-baris .anbk-tgl-tahun { flex: 1.4 1 0; }
+.anbk-token-input {
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  font-weight: 700;
+  max-width: 220px;
+}
+.anbk-btn-submit {
+  border-radius: 999px;
+  min-height: 48px;
+  background: var(--anbk-blue-bright);
+  border-color: var(--anbk-blue-bright);
+  color: #fff;
+  font-size: var(--fs-lg);
+  font-weight: 700;
+}
+.anbk-btn-submit:hover { background: #0f6ae0; border-color: #0f6ae0; }
+
+/* Kartu Konfirmasi Tes (setelah verifikasi berhasil). */
+.anbk-info-tes .anbk-baris { text-align: left; }
+.anbk-info-tes .anbk-konfirmasi-judul { text-align: center; }
+
+/* ---------- Reviu hasil: tabel Jawaban Anda vs Kunci Jawaban ---------- */
+.anbk-reviu-wrap { margin-top: var(--sp-4); overflow-x: auto; }
+.anbk-reviu-tabel { width: 100%; border-collapse: collapse; font-size: var(--fs-sm); }
+.anbk-reviu-tabel th {
+  background: var(--anbk-blue);
+  color: #fff;
+  text-align: left;
+  padding: var(--sp-2) var(--sp-3);
+}
+.anbk-reviu-tabel td {
+  padding: var(--sp-2) var(--sp-3);
+  border-bottom: 1px solid var(--anbk-border-soft);
+  vertical-align: top;
+}
+.anbk-reviu-tabel tr.status-salah td { background: #fdf1f1; }
+.anbk-reviu-tabel tr.status-benar td { background: #f2faf3; }
+.anbk-reviu-status { font-weight: 700; white-space: nowrap; }
+tr.status-benar .anbk-reviu-status { color: var(--anbk-green); }
+tr.status-salah .anbk-reviu-status { color: var(--anbk-teks-red); }
+tr.status-kosong .anbk-reviu-status { color: var(--c-text-muted); }
+
+/* ---------- Kartu Token Ujian di Beranda Admin ---------- */
+.token-ujian-kode {
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: 6px;
+  color: var(--anbk-blue-dark);
+}
+
+/* ======================================================================
+ * HALAMAN UJIAN - gaya ANBK
+ * ====================================================================== */
+.ujian-layout { background: var(--anbk-bg); }
+
+/* Header biru ANBK: logo + PUSMENDIK di kiri, peserta di kanan. */
+.ujian-header {
+  padding: var(--sp-2) var(--sp-5);
+  background:
+    linear-gradient(115deg, rgba(255, 255, 255, 0.10) 0 18%, transparent 18%),
+    linear-gradient(245deg, rgba(0, 0, 0, 0.10) 0 22%, transparent 22%),
+    linear-gradient(90deg, var(--anbk-blue-dark), var(--anbk-blue));
+  box-shadow: 0 2px 8px rgba(16, 47, 82, 0.25);
+}
+.ujian-header .anbk-logo { width: 44px; height: 44px; font-size: 23px; }
+.ujian-header .anbk-brand-nama { font-size: 18px; }
+.ujian-info { flex: 1 1 auto; justify-content: flex-end; text-align: right; }
+.ujian-peserta { font-size: var(--fs-base); font-weight: 700; opacity: 1; }
+.ujian-mapel-head { font-size: var(--fs-sm); opacity: 0.92; }
+
+/* Area utama: satu kartu putih besar, tanpa panel samping permanen. */
+.ujian-main {
+  display: block;
+  max-width: 1280px;
+  padding: var(--sp-4) var(--sp-4) var(--sp-6);
+}
+.ujian-card {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 12px 32px rgba(31, 68, 120, 0.16);
+  overflow: hidden;
+}
+.ujian-card-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2) var(--sp-3);
+  padding: var(--sp-4) var(--sp-5) 0;
+}
+.ujian-card-head-kiri { flex: 1 1 auto; min-width: 0; }
+.ujian-card-mapel { font-weight: 600; color: var(--c-text-muted); }
+.ujian-card-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--sp-2);
+  margin-left: auto;
+}
+.anbk-info-btn {
+  min-height: 36px;
+  padding: var(--sp-1) var(--sp-4);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  color: #fff;
+  background: var(--anbk-blue-btn);
+  border-color: var(--anbk-blue-btn);
+  border-radius: 999px;
+}
+.anbk-info-btn:hover { background: var(--anbk-blue-dark); border-color: var(--anbk-blue-dark); }
+.ujian-timer-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  min-height: 36px;
+  padding: var(--sp-1) var(--sp-3);
+  font-size: var(--fs-sm);
+  color: var(--c-text-muted);
+  border: 1px solid #c3d0dd;
+  border-radius: 999px;
+  background: #fff;
+}
+.ujian-timer {
+  min-height: 0;
+  padding: 0;
+  font-size: var(--fs-base);
+  color: var(--c-text);
+  background: transparent;
+  border: none;
+  border-radius: 0;
+}
+.ujian-timer.is-kritis { color: #fff; background: var(--c-danger); border-radius: 999px; padding: 0 var(--sp-2); }
+/* Tombol "Daftar Soal": selalu tampil (semua ukuran layar), pil biru. */
+.ujian-panel-toggle {
+  display: inline-flex;
+  min-height: 36px;
+  padding: var(--sp-1) var(--sp-4);
+  font-size: var(--fs-sm);
+  color: #fff;
+  background: var(--anbk-blue-btn);
+  border: none;
+  border-radius: 999px;
+}
+.ujian-panel-toggle:hover { background: var(--anbk-blue-dark); }
+.ujian-nomor-aktif { color: var(--anbk-blue-dark); }
+
+/* Isi soal di dalam kartu. */
+.ujian-konten {
+  padding: var(--sp-2) var(--sp-5) var(--sp-4);
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+.soal-header { border-bottom: none; margin-bottom: var(--sp-2); padding-bottom: 0; }
+.soal-nomor { color: var(--c-text); font-size: 20px; font-weight: 600; }
+.fs-label { color: var(--c-text); }
+.fs-btn {
+  min-width: 30px;
+  min-height: 30px;
+  padding: 0 var(--sp-1);
+  color: var(--c-text);
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+}
+.fs-btn[data-fs="kecil"] { font-size: 12px; }
+.fs-btn[data-fs="sedang"] { font-size: 15px; }
+.fs-btn[data-fs="besar"] { font-size: 19px; }
+.fs-btn:hover { background: #eef3f8; }
+.fs-btn[aria-pressed="true"], .fs-btn.is-aktif { color: var(--anbk-blue-dark); background: #dbe9f5; }
+
+/* Kotak isi soal: stimulus di kiri, pertanyaan/opsi di kanan (layar lebar),
+ * seperti pembagian dua kolom pada proses tes ANBK. */
+.ujian-soal {
+  padding: var(--sp-4) var(--sp-5);
+  border: 1px solid var(--anbk-border-soft);
+  border-radius: 6px;
+}
+@media (min-width: 992px) {
+  .ujian-soal {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: var(--sp-5);
+  }
+  .ujian-soal .soal-header { grid-column: 1 / -1; }
+  .ujian-soal .soal-teks { grid-column: 1; padding-right: var(--sp-5); border-right: 2px dotted #ccd8e4; }
+  .ujian-soal .soal-gambar { grid-column: 1; }
+  .ujian-soal .soal-petunjuk { grid-column: 2; }
+  .ujian-soal .opsi-list { grid-column: 2; }
+  .ujian-soal .soal-pembahasan { grid-column: 1 / -1; }
+}
+.opsi-label { border: none; border-radius: 8px; padding-left: var(--sp-1); }
+.opsi-label:hover { border-color: transparent; background: #f2f7fc; }
+.opsi-label:has(input:checked), .opsi.is-terpilih .opsi-label {
+  border-color: transparent;
+  background: #e3eef9;
+  box-shadow: inset 0 0 0 2px var(--anbk-blue-btn);
+}
+.opsi-label input[type="radio"], .opsi-label input[type="checkbox"] { accent-color: var(--anbk-blue-btn); }
+
+/* Panel "Daftar Soal": laci dari kanan pada SEMUA ukuran layar. */
+.ujian-panel {
+  position: fixed;
+  z-index: 900;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(340px, 90vw);
+  max-width: 100%;
+  overflow-y: auto;
+  background: #fff;
+  border: none;
+  border-left: 1px solid var(--c-border);
+  border-radius: 0;
+  box-shadow: var(--shadow-lg);
+  transform: translateX(105%);
+  visibility: hidden;
+  transition: transform 0.25s ease-out, visibility 0s linear 0.25s;
+}
+.ujian-panel.is-open {
+  transform: none;
+  visibility: visible;
+  transition: transform 0.25s ease-out, visibility 0s;
+}
+.ujian-panel-close { display: inline-flex; align-items: center; justify-content: center; }
+.ujian-panel-backdrop.is-open {
+  display: block;
+  position: fixed;
+  z-index: 890;
+  inset: 0;
+  background: rgba(15, 35, 60, 0.45);
+}
+.nomor-btn { border-radius: 8px; }
+
+/* Footer navigasi di dalam kartu: tombol pil seperti ANBK. */
+.ujian-footer {
+  position: static;
+  justify-content: space-between;
+  padding: var(--sp-3) var(--sp-5) var(--sp-5);
+  background: #fff;
+  border-top: none;
+  box-shadow: none;
+}
+.ujian-footer .btn {
+  min-height: 44px;
+  padding: var(--sp-2) var(--sp-5);
+  border: none;
+  border-radius: 999px;
+}
+.ujian-btn-prev { color: var(--anbk-prev-fg); background: var(--anbk-prev-bg); }
+.ujian-btn-prev:hover { background: #e88fa0; }
+.ujian-btn-prev[disabled] { opacity: 0.45; }
+.ujian-btn-ragu { color: #4d3b00; background: var(--anbk-ragu-bg); }
+.ujian-btn-ragu::before { content: "\2610\00A0"; font-size: var(--fs-lg); }
+.ujian-btn-ragu[aria-pressed="true"], .ujian-btn-ragu.is-aktif {
+  color: #4d3b00;
+  background: #ffb300;
+  border-color: transparent;
+  box-shadow: inset 0 0 0 2px #8d6e00;
+}
+.ujian-btn-ragu[aria-pressed="true"]::before { content: "\2611\00A0"; }
+.ujian-btn-next { color: #fff; background: var(--anbk-blue-btn); margin-left: 0; }
+.ujian-btn-next:hover { background: var(--anbk-blue-dark); }
+/* Soal terakhir: HANYA tombol "Selesai" (pil merah), tidak ada "Soal berikutnya". */
+.ujian-btn-selesai { color: #fff; background: var(--anbk-teks-red); margin-left: 0; }
+.ujian-btn-selesai:hover { background: #b71c1c; }
+.simpan-indikator { margin-left: 0; }
+
+/* Dialog selesai: seperti kartu "Konfirmasi Tes" penutup ANBK -
+ * tombol merah SELESAI dan tombol hijau KEMBALI. */
+.ujian-dialog-selesai { border-radius: 14px; }
+.ujian-dialog-selesai .dialog-aksi { justify-content: center; }
+.ujian-dialog-selesai .dialog-aksi .btn {
+  min-width: 150px;
+  min-height: 46px;
+  border: none;
+  border-radius: 999px;
+}
+.ujian-dialog-selesai .dialog-aksi .btn:not(.btn-danger) {
+  color: #fff;
+  background: var(--anbk-green);
+}
+.ujian-dialog-selesai .dialog-aksi .btn:not(.btn-danger):hover { background: #238a3e; }
+
+/* ---------- Hasil (seperti "Reviu Hasil Simulasi") ---------- */
+.anbk-hasil-page { min-height: 100vh; background: var(--anbk-bg); }
+.anbk-hasil-bungkus {
+  width: calc(100% - 2 * var(--sp-4));
+  max-width: 980px;
+  margin: var(--sp-5) auto var(--sp-6);
+}
+.anbk-hasil-kartu {
+  padding: var(--sp-6) var(--sp-5) var(--sp-5);
+  text-align: center;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 14px 35px rgba(31, 68, 120, 0.16);
+}
+.anbk-hasil-ikon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  margin-bottom: var(--sp-3);
+  font-size: 34px;
+  color: #fff;
+  background: linear-gradient(160deg, #3d8fa8, var(--anbk-blue));
+  border-radius: 50%;
+}
+.anbk-hasil-judul { margin: 0 0 var(--sp-3); font-size: var(--fs-xxl); }
+.anbk-hasil-mapel {
+  display: inline-block;
+  padding: var(--sp-1) var(--sp-4);
+  font-weight: 600;
+  color: var(--anbk-blue-dark);
+  border: 1px solid #b9cfe2;
+  border-radius: 999px;
+  background: #f4f9fd;
+}
+.anbk-hasil-isi { margin-top: var(--sp-5); text-align: left; }
+.anbk-hasil-total {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  margin-top: var(--sp-5);
+  padding: var(--sp-3) var(--sp-4);
+  text-align: left;
+  background: #e8f1f8;
+  border-radius: 10px;
+}
+.anbk-hasil-total-ikon { font-size: var(--fs-xl); color: var(--anbk-blue-dark); }
+.anbk-hasil-total-teks { display: flex; flex-direction: column; line-height: 1.25; }
+.anbk-hasil-total-teks small { color: var(--c-text-muted); }
+.anbk-hasil-aksi { display: flex; justify-content: flex-end; margin-top: var(--sp-4); }
+.anbk-btn-keluar {
+  min-width: 130px;
+  min-height: 46px;
+  color: #fff;
+  background: var(--anbk-teks-red);
+  border: none;
+  border-radius: 999px;
+}
+.anbk-btn-keluar:hover { background: #b71c1c; }
+
+/* Statistik hasil (kelas .stat-grid/.stat dipakai js/pages/hasil.js). */
+.anbk-hasil-isi .hasil-skor { text-align: center; font-size: var(--fs-lg); }
+.anbk-hasil-isi .hasil-skor strong { font-size: 34px; color: var(--anbk-blue-dark); }
+.anbk-hasil-isi .hasil-pesan { text-align: center; font-size: var(--fs-lg); }
+.anbk-hasil-isi .stat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--sp-3);
+}
+.anbk-hasil-isi .stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--sp-3) var(--sp-4);
+  text-align: center;
+  background: #eef5fb;
+  border: 1px solid #d3e2ef;
+  border-radius: 10px;
+}
+.anbk-hasil-isi .stat-label { font-size: var(--fs-sm); color: var(--c-text-muted); }
+.anbk-hasil-isi .stat-value { font-size: var(--fs-xl); font-weight: 700; color: var(--anbk-blue-dark); }
+@media (max-width: 560px) {
+  .anbk-hasil-isi .stat-grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* ---------- Layar kecil ---------- */
+@media (max-width: 767.98px) {
+  .anbk-topbar { padding: var(--sp-3); }
+  .anbk-brand-nama { font-size: 17px; }
+  .anbk-login-body { padding: var(--sp-5) var(--sp-4); }
+  .anbk-pilih-kartu { padding: var(--sp-5) var(--sp-4); }
+  .anbk-konfirmasi-kartu { padding: var(--sp-4); }
+  .ujian-header { padding: var(--sp-2) var(--sp-3); }
+  .ujian-header .anbk-brand { display: flex; }
+  .ujian-main { padding: var(--sp-3) var(--sp-2) var(--sp-5); }
+  .ujian-card-head { padding: var(--sp-3) var(--sp-3) 0; }
+  .ujian-konten { padding: var(--sp-2) var(--sp-3) var(--sp-3); }
+  .ujian-soal { padding: var(--sp-3); }
+  .ujian-footer { padding: var(--sp-2) var(--sp-3) var(--sp-4); }
+  .ujian-footer .btn { flex: 1 1 30%; padding: var(--sp-2) var(--sp-3); }
+  .simpan-indikator { order: -1; flex: 1 1 100%; justify-content: center; }
+}

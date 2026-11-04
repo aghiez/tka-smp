@@ -28,6 +28,8 @@
  *   Memuat      : .loading, .loading-page, .loading-overlay, .spinner,
  *                 .loading-teks (teks indikator ui.tampilkanLoading)
  *   Teks        : .text-muted, .text-danger, .text-success, .text-center, .text-right
+ *   Markup_Soal : .m-frac, .m-num, .m-den (pecahan bertumpuk), .m-img (gambar),
+ *                 .m-img-gagal (pengganti gambar yang gagal dimuat)
  */
 
 :root {
@@ -452,6 +454,35 @@ input:disabled, select:disabled, textarea:disabled { background: #eceff1; cursor
   border-top-color: var(--c-primary);
   border-radius: 50%;
   animation: cbt-spin 0.8s linear infinite;
+}
+
+/* ---------- Markup_Soal bersama (Perender_Soal: span.m-*, img.m-img) ----------
+ * Di base.css agar pecahan bertumpuk dan gambar tampil sama di Halaman_Ujian,
+ * Halaman_Reviu_Hasil, pratinjau Soal, dan detail jawaban Admin (Requirement 28.3, 28.9). */
+.m-frac {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: stretch;
+  vertical-align: middle;
+  margin: 0 2px;
+  text-align: center;
+  line-height: 1.25;
+}
+.m-num, .m-den { display: block; padding: 0 3px; }
+.m-num { border-bottom: 1.5px solid currentColor; }
+.m-img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 8px auto;
+}
+.m-img-gagal {
+  display: block;
+  margin: 8px auto;
+  font-size: var(--fs-sm);
+  font-style: italic;
+  color: var(--c-text-muted);
+  text-align: center;
 }
 
 /* ---------- Utilitas teks ---------- */
